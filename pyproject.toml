@@ -1,0 +1,12 @@
+[project]
+name = "componenthub-mcp"
+version = "0.1.0"
+description = "ComponentHub as an MCP server — live electronic component search, details, pricing, CAD models, and export links for any AI chat"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi>=0.139.0",
+    "httpx>=0.28.1",
+    "mcp>=1.10",
+    "uvicorn>=0.50.0",
+]
