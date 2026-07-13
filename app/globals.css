@@ -470,6 +470,21 @@
     white-space: pre;
     color: var(--ink);
   }
+  .rescard {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .rescard:hover {
+    background: var(--panel2);
+  }
+  .rescard.best {
+    background: var(--accsoft);
+    box-shadow: inset 2px 0 0 var(--acc);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
