@@ -19,5 +19,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "componenthub_mcp"]
+  "exclude": ["node_modules", "componenthub_mcp", "worktree-home-search"]
 }

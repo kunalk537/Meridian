@@ -1,0 +1,9 @@
+export { DetailClient } from "./DetailClient";
+export { DetailHeader } from "./DetailHeader";
+export { TabOverview } from "./TabOverview";
+export { TabPricing } from "./TabPricing";
+export { TabDatasheet } from "./TabDatasheet";
+export { TabCad } from "./TabCad";
+export { TabPinout } from "./TabPinout";
+export { Tab3d } from "./Tab3d";
+export { TabAlternatives } from "./TabAlternatives";
