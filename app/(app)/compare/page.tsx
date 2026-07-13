@@ -1,5 +1,5 @@
-import { Placeholder } from "@/components/shell/Placeholder";
+import { CompareClient } from "@/components/compare/CompareClient";
 
 export default function ComparePage() {
-  return <Placeholder title="Compare" unit="Compare" />;
+  return <CompareClient />;
 }
