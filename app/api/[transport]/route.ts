@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { createMcpHandler } from "mcp-handler";
+import { createMcpHandler, withMcpAuth } from "mcp-handler";
 import { allProviders, getProvider, ProviderError } from "@/lib/domain/providers/registry";
 import { search, history } from "@/lib/domain/coordinator";
 import { searchQuerySchema, Capability, excludeNone } from "@/lib/domain/models";
 import { baseUrl } from "@/lib/domain/config";
+import { createAdminClient, isServiceRoleConfigured } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -259,4 +260,26 @@ const handler = createMcpHandler(
   { basePath: "/api" },
 );
 
-export { handler as GET, handler as POST, handler as DELETE };
+/**
+ * Verifies the `Authorization: Bearer <key>` header against mcp_api_keys.
+ * Uses the service-role client since callers here carry no Supabase session
+ * — only the per-user key generated from the MCP modal.
+ */
+async function verifyToken(_req: Request, bearerToken?: string) {
+  if (!bearerToken) return undefined;
+  if (!isServiceRoleConfigured()) {
+    console.error("SUPABASE_SERVICE_ROLE_KEY is not set — rejecting all MCP requests.");
+    return undefined;
+  }
+  const { data } = await createAdminClient()
+    .from("mcp_api_keys")
+    .select("user_id")
+    .eq("api_key", bearerToken)
+    .maybeSingle();
+  if (!data) return undefined;
+  return { token: bearerToken, clientId: data.user_id, scopes: [] };
+}
+
+const authedHandler = withMcpAuth(handler, verifyToken, { required: true });
+
+export { authedHandler as GET, authedHandler as POST, authedHandler as DELETE };

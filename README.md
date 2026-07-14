@@ -24,19 +24,36 @@ User opens link in browser ───────────▶ picks KiCad / Al
 
 ## Quick start
 
+### Web app (Next.js)
+
+```sh
+npm install
+cp .env.example .env.local
+npm run dev          # http://localhost:3000
+```
+
+Opens the Meridian product UI: search, compare, detail pages, projects, and auth.
+The MCP endpoint is built in at `/api/[transport]` — no separate server needed.
+
+### MCP server (Python, for stdio / Claude Desktop)
+
 ```sh
 uv sync
-uv run main.py            # HTTP mode: MCP endpoint at http://127.0.0.1:8000/mcp
-uv run main.py --stdio    # stdio mode: for clients that spawn the server
+uv run main.py --stdio
 ```
 
 Works out of the box with the built-in `demo` provider (clearly-labeled sample
 catalog), so you can try the whole flow without any API keys.
 
-### Connect from Claude Code
+### Connect from Claude Code (HTTP)
+
+The web app's MCP endpoint requires a per-user API key — open the **MCP server**
+modal in the app (sign in first) to get yours; it's generated automatically and
+can be regenerated at any time.
 
 ```sh
-claude mcp add --transport http componenthub http://127.0.0.1:8000/mcp
+claude mcp add --transport http componenthub http://127.0.0.1:3000/api/mcp \
+  --header "Authorization: Bearer <your-api-key>"
 ```
 
 ### Connect from Claude Desktop (stdio)
@@ -46,14 +63,11 @@ claude mcp add --transport http componenthub http://127.0.0.1:8000/mcp
   "mcpServers": {
     "componenthub": {
       "command": "uv",
-      "args": ["run", "--project", "/Users/devmello/Projects/componenthub_mcp", "main.py", "--stdio"]
+      "args": ["run", "--project", "/PATH/TO/componenthub_mcp", "main.py", "--stdio"]
     }
   }
 }
 ```
-
-Export links require the HTTP server to be running too (`uv run main.py`), since the
-export pages are served by the same FastAPI app.
 
 ## MCP tools
 
@@ -113,6 +127,87 @@ automatically on startup. All variables:
 | `SNAPMAGIC_TOKEN` | SnapMagic (SnapEDA) API | — |
 | `ULTRA_LIBRARIAN_CLIENT_ID` / `ULTRA_LIBRARIAN_CLIENT_SECRET` | Ultra Librarian partner API | — |
 | `ULTRA_LIBRARIAN_API_BASE` / `ULTRA_LIBRARIAN_TOKEN_URL` | Ultra Librarian endpoint overrides | official endpoints |
+
+## Development
+
+### Prerequisites
+
+- **Node.js** >= 18 (for the web app)
+- **npm** (ships with Node.js)
+- **Python** >= 3.14 + **uv** (optional, for the Python MCP server)
+
+### Setup
+
+```sh
+# 1. Clone and install dependencies
+git clone <repo>
+cd componenthub_mcp
+npm install
+
+# 2. Copy env and fill in any API keys you have
+cp .env.example .env.local
+
+# 3. Start the dev server
+npm run dev        # → http://localhost:3000
+```
+
+The web app and MCP endpoint both run from the same Next.js server.
+
+### Run the Python MCP server (optional)
+
+```sh
+uv sync            # install Python deps
+uv run main.py     # HTTP on :8000, MCP at /mcp
+uv run main.py --stdio  # stdio mode for Claude Desktop
+```
+
+### Verify
+
+- **TypeScript**: `npm run typecheck` (`tsc --noEmit`)
+- **Build**: `npm run build` (creates a production build)
+- **Lint**: `npm run lint` (Next.js lint)
+
+### Project structure
+
+```
+app/                          Next.js App Router pages & API routes
+├── (app)/                    Authenticated product pages
+│   ├── search/               Home / search screen
+│   ├── results/              Results with table/cards + filters rail
+│   ├── compare/              Compare screen + docked tray
+│   ├── parts/[provider]/[id] Part detail (7 tabs)
+│   └── projects/             Projects / BOM list
+├── (auth)/                   Auth pages (sign-in, sign-up)
+├── api/[transport]/route.ts  MCP server endpoint (TypeScript)
+└── api/                      REST endpoints (search, part, pricing, etc.)
+components/                   React components by feature
+lib/                          Domain logic, providers, hooks, Supabase client
+main.py                       Python MCP server entry point
+componenthub_mcp/             Python MCP server package
+```
+
+### Environment variables
+
+See [Configuration](#configuration) above. For local dev, edit `.env.local` — it is
+gitignored. The demo provider works with no config at all.
+
+### Testing
+
+There are no automated tests yet. To manually test the full flow:
+
+1. Run `npm run dev` and open http://localhost:3000
+2. Search for a component on the search page
+3. View results, compare parts, open detail pages
+4. Sign in / sign up to test Supabase auth
+5. Verify the MCP endpoint: connect from Claude Code or use `curl` with the API
+   key from the MCP modal:
+
+```sh
+curl http://localhost:3000/api/mcp -X POST \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <your-api-key>" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
 
 ## Layout
 
