@@ -51,6 +51,32 @@ function bestPrice(r: ComponentResult): number | null {
   return prices.length ? Math.min(...prices) : null;
 }
 
+const SPEC_ALIASES: Record<string, string[]> = {
+  VIN: ["Input Voltage", "VIN", "Vin"],
+  EFF: ["Efficiency"],
+  FSW: ["Switching Frequency", "Frequency"],
+  IQ: ["Quiescent Current", "IQ"],
+  CORE: ["Core"],
+  RADIO: ["Wi-Fi", "Radio", "Wireless", "Connectivity"],
+  USB: ["USB"],
+  FLASH: ["Flash", "Flash Memory"],
+  GPIO: ["GPIO"],
+  NOISE: ["Input Noise", "Noise", "Noise Density"],
+  OFFSET: ["Offset", "Offset Voltage", "Vos"],
+  SUPPLY: ["Supply Voltage", "Supply", "Operating Voltage"],
+  GBW: ["GBW", "Gain Bandwidth", "Gain-Bandwidth"],
+};
+
+function specValue(r: ComponentResult, colKey: string): string | null {
+  if (colKey === "PKG") return r.package ?? null;
+  const aliases = SPEC_ALIASES[colKey] ?? [];
+  for (const a of aliases) {
+    const v = r.specifications?.[a];
+    if (v != null) return v;
+  }
+  return null;
+}
+
 function totalStock(r: ComponentResult): number {
   return r.offers.reduce((sum, o) => sum + (o.stock ?? 0), 0);
 }
@@ -115,9 +141,14 @@ export function ResultsTable({
                   {r.manufacturer ?? "—"} · {r.description?.slice(0, 60) ?? ""}
                 </div>
               </div>
-              {cols.map((c) => (
-                <span key={c.key} className="mono text-[11.5px]">—</span>
-              ))}
+              {cols.map((c) => {
+                const v = specValue(r, c.key);
+                return (
+                  <span key={c.key} className="mono text-[11.5px]">
+                    {v ?? "—"}
+                  </span>
+                );
+              })}
               <span className="mono text-[12.5px] font-semibold">
                 {formatUsd(price)}
               </span>

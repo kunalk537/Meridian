@@ -56,6 +56,7 @@ export interface ComponentResult {
   datasheet_url?: string | null;
   image_url?: string | null;
   offers: Offer[];
+  specifications?: Record<string, string>;
 }
 
 export interface CadAsset {

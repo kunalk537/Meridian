@@ -284,6 +284,7 @@ export class DemoProvider extends Provider {
       package: row.package,
       datasheet_url: row.datasheet_url,
       offers: [this.offer(row)],
+      specifications: { ...row.specs },
     };
   }
 

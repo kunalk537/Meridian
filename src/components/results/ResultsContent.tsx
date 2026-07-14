@@ -195,7 +195,7 @@ export function ResultsContent() {
       <ParsingInterstitial
         query={q}
         constraints={constraints}
-        providers={["Demo", "LCSC", "DigiKey", "Mouser"]}
+        providers={["LCSC", "DigiKey", "Mouser"]}
         onDone={parsingDone}
       />
     );

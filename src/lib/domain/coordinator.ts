@@ -72,6 +72,12 @@ function merge(results: ComponentResult[]): ComponentResult[] {
       existing.package = existing.package || r.package;
       existing.datasheet_url = existing.datasheet_url || r.datasheet_url;
       existing.image_url = existing.image_url || r.image_url;
+      if (r.specifications) {
+        existing.specifications ??= {};
+        for (const [k, v] of Object.entries(r.specifications)) {
+          if (!(k in existing.specifications)) existing.specifications[k] = v;
+        }
+      }
     } else {
       merged.set(key, structuredClone(r));
     }
