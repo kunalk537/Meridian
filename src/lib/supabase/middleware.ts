@@ -8,6 +8,7 @@ import { isSupabaseConfigured, SUPABASE_ANON_KEY, SUPABASE_URL } from "./config"
 const PUBLIC_PREFIXES = [
   "/sign-in",
   "/sign-up",
+  "/verify-email",
   "/auth",
   "/api/mcp",
   "/api/export",
@@ -56,6 +57,13 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/sign-in";
     url.searchParams.set("next", path);
+    return NextResponse.redirect(url);
+  }
+
+  // Signed-in users with unconfirmed emails are redirected to /verify-email.
+  if (user && !user.email_confirmed_at && path !== "/verify-email") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/verify-email";
     return NextResponse.redirect(url);
   }
 
