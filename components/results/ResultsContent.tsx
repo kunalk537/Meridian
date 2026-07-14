@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api, type SearchResponse, type ProviderInfo } from "@/lib/api-client";
 import { useSearchHistory } from "@/lib/hooks/data";
@@ -110,15 +110,17 @@ export function ResultsContent() {
     return () => { cancelled = true; };
   }, [q, router]);
 
+  const recordedDataRef = useRef<SearchResponse | null>(null);
+
   useEffect(() => {
-    if (data && phase === "parsing") {
-      record.mutate({
-        query: q,
-        providers: data.providers_searched,
-        result_count: data.results.length,
-      });
-    }
-  }, [data, phase, q, record]);
+    if (!data || recordedDataRef.current === data) return;
+    recordedDataRef.current = data;
+    record.mutate({
+      query: q,
+      providers: data.providers_searched,
+      result_count: data.results.length,
+    });
+  }, [data, q, record]);
 
   const constraints = useMemo(() => buildConstraints(q), [q]);
   const dataset = useMemo(() => detectDataset(q), [q]);
