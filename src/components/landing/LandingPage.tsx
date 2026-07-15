@@ -402,10 +402,10 @@ export function LandingPage() {
           </p>
           <div className="mx-auto mt-10 flex max-w-[820px] flex-wrap justify-center gap-[10px]">
             {[
-              { name: "demo · built-in", active: true },
               { name: "digikey", active: false },
               { name: "mouser", active: false },
               { name: "octopart", active: false },
+              { name: "oemsecrets", active: false },
               { name: "lcsc · no key", active: true },
               { name: "snapmagic", active: false },
               { name: "ultralibrarian", active: false },

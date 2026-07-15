@@ -9,6 +9,7 @@ import { DigiKeyProvider } from "./digikey";
 import { LcscProvider } from "./lcsc";
 import { MouserProvider } from "./mouser";
 import { OctopartProvider } from "./octopart";
+import { OemsecretsProvider } from "./oemsecrets";
 import { SnapMagicProvider } from "./snapmagic";
 import { UltraLibrarianProvider } from "./ultralibrarian";
 
@@ -18,6 +19,7 @@ const ALL_PROVIDERS: Provider[] = [
   new MouserProvider(),
   new LcscProvider(),
   new OctopartProvider(),
+  new OemsecretsProvider(),
   new SnapMagicProvider(),
   new UltraLibrarianProvider(),
 ];

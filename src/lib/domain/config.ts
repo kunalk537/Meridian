@@ -51,3 +51,7 @@ export const ultralibrarianApiBase = () =>
 export const ultralibrarianTokenUrl = () =>
   process.env.ULTRA_LIBRARIAN_TOKEN_URL ||
   "https://identity.ultralibrarian.com/connect/token";
+export const oemsecretsApiKey = () =>
+  process.env.OEMSECRETS_API_KEY || process.env.OEMSECRETS || null;
+export const oemsecretsCountryCode = () => process.env.OEMSECRETS_COUNTRY_CODE || null;
+export const oemsecretsCurrency = () => process.env.OEMSECRETS_CURRENCY || "USD";

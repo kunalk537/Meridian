@@ -16,6 +16,7 @@ const KIND: Record<string, string> = {
   mouser: "Distributor",
   lcsc: "Distributor",
   octopart: "Aggregator",
+  oemsecrets: "Aggregator",
   snapmagic: "CAD library",
   ultralibrarian: "CAD library",
 };
